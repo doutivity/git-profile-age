@@ -1,0 +1,1508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Git Profile Age — When was a GitHub, GitLab or Bitbucket profile created?</title>
+  <meta name="description" content="Free Git profile checker for recruiters: paste a GitHub, GitLab, Bitbucket, Codeberg, Gitee or other Git profile URL and see the account creation date and profile age. Runs entirely in your browser, no tracking.">
+  <meta name="referrer" content="no-referrer">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#0f766e">
+  <link rel="canonical" href="https://doutivity.github.io/git-profile-age/">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="site.webmanifest">
+  <link rel="author" href="humans.txt">
+  <link rel="sitemap" type="application/xml" href="sitemap.xml">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Git Profile Age">
+  <meta property="og:title" content="Git Profile Age — check when a Git profile was created">
+  <meta property="og:description" content="Paste a GitHub, GitLab, Bitbucket or other Git profile URL and see the account creation date and age. Privacy-friendly, browser-only tool for recruiters and hiring managers.">
+  <meta property="og:url" content="https://doutivity.github.io/git-profile-age/">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:locale:alternate" content="uk_UA">
+  <meta property="og:image" content="https://doutivity.github.io/git-profile-age/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Git Profile Age: when was this Git profile created? Example result: profile created January 15, 2018, 8 years 7 months ago.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Git Profile Age — check when a Git profile was created">
+  <meta name="twitter:description" content="GitHub account age, GitLab and Bitbucket profile creation date in one click. No tracking, no backend.">
+  <meta name="twitter:image" content="https://doutivity.github.io/git-profile-age/og-image.png">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebApplication",
+        "@id": "https://doutivity.github.io/git-profile-age/#app",
+        "name": "Git Profile Age",
+        "url": "https://doutivity.github.io/git-profile-age/",
+        "description": "Check when a GitHub, GitLab, Bitbucket, Codeberg or other Git profile was created. Shows the account creation date and profile age using public APIs, entirely in the browser.",
+        "applicationCategory": "UtilitiesApplication",
+        "operatingSystem": "Any",
+        "browserRequirements": "Requires JavaScript",
+        "inLanguage": ["en", "uk"],
+        "isAccessibleForFree": true,
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "image": "https://doutivity.github.io/git-profile-age/og-image.png",
+        "author": {
+          "@type": "Person",
+          "name": "Yaroslav Podorvanov",
+          "url": "https://github.com/YaroslavPodorvanov",
+          "sameAs": ["https://www.linkedin.com/in/yaroslav-podorvanov/"]
+        },
+        "license": "https://github.com/doutivity/git-profile-age/blob/main/LICENSE",
+        "codeRepository": "https://github.com/doutivity/git-profile-age"
+      },
+      {
+        "@type": "FAQPage",
+        "@id": "https://doutivity.github.io/git-profile-age/#faq",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "How do I check when a GitHub profile was created?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Paste the profile link, for example https://github.com/username, into Git Profile Age and press Enter. The tool queries GitHub's public API and shows the exact account creation timestamp and the profile age. Repository links work too; the tool uses the repository owner."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Does it work for GitLab and Bitbucket?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes, with limits set by the services themselves. GitLab publishes creation dates for groups but not for personal accounts without signing in, so for users the tool verifies the profile and links to the page where GitLab shows \"Member since\". Bitbucket returns the workspace creation date; accounts older than 29 November 2018 show that migration date."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Is the profile URL I enter collected or tracked?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No. Git Profile Age has no backend, no analytics and no cookies. The URL is processed in your browser and sent only to the public API of the Git service it belongs to. Results are cached in your own browser storage for seven days."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Як перевірити дату створення GitHub профілю?",
+            "inLanguage": "uk",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "inLanguage": "uk",
+              "text": "Вставте посилання на профіль, наприклад https://github.com/username, у поле на сторінці Git Profile Age і натисніть Enter. Інструмент звернеться до публічного API GitHub і покаже точну дату реєстрації та вік акаунта."
+            }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+
+  <style>
+    :root {
+      --bg: #f6f8fa;
+      --surface: #ffffff;
+      --text: #1f2937;
+      --muted: #4b5563;
+      --border: #d0d7de;
+      --accent: #0f766e;
+      --accent-hover: #0b5f59;
+      --accent-text: #ffffff;
+      --focus: #1d4ed8;
+      --error-bg: #fef2f2;
+      --error-border: #f87171;
+      --error-text: #991b1b;
+      --warn-bg: #fffbeb;
+      --warn-border: #f59e0b;
+      --warn-text: #78350f;
+      --success-bg: #ecfdf5;
+      --success-border: #34d399;
+      --success-text: #065f46;
+      --code-bg: #eef1f4;
+      --radius: 10px;
+      --shadow: 0 1px 2px rgba(16, 24, 40, 0.06), 0 1px 3px rgba(16, 24, 40, 0.1);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0b1220;
+        --surface: #111a2e;
+        --text: #e5e7eb;
+        --muted: #a3adbd;
+        --border: #2a3650;
+        --accent: #2dd4bf;
+        --accent-hover: #5eead4;
+        --accent-text: #052e2b;
+        --focus: #93c5fd;
+        --error-bg: #2a1215;
+        --error-border: #f87171;
+        --error-text: #fecaca;
+        --warn-bg: #2a2108;
+        --warn-border: #f59e0b;
+        --warn-text: #fde68a;
+        --success-bg: #06281f;
+        --success-border: #34d399;
+        --success-text: #a7f3d0;
+        --code-bg: #1b2740;
+        --shadow: none;
+      }
+    }
+
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+      font-size: 16px;
+      line-height: 1.55;
+      color: var(--text);
+      background: var(--bg);
+    }
+    a { color: var(--accent); }
+    a:hover { color: var(--accent-hover); }
+    code, .mono {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+      font-size: 0.92em;
+      background: var(--code-bg);
+      padding: 0.1em 0.35em;
+      border-radius: 4px;
+      overflow-wrap: anywhere;
+    }
+    :focus-visible {
+      outline: 3px solid var(--focus);
+      outline-offset: 2px;
+    }
+    .visually-hidden {
+      position: absolute !important;
+      width: 1px; height: 1px;
+      padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0 0 0 0);
+      white-space: nowrap; border: 0;
+    }
+    .skip-link {
+      position: absolute; left: 8px; top: -100px;
+      background: var(--surface); color: var(--text);
+      padding: 8px 12px; border-radius: 6px; z-index: 10;
+    }
+    .skip-link:focus { top: 8px; }
+
+    .container { width: 100%; max-width: 760px; margin: 0 auto; padding: 0 16px; }
+
+    .site-header { padding: 20px 0 8px; }
+    .brand {
+      display: inline-flex; align-items: center; gap: 10px;
+      text-decoration: none; color: var(--text); font-weight: 700; font-size: 1.05rem;
+    }
+    .brand svg { width: 28px; height: 28px; flex: 0 0 auto; }
+
+    main { padding: 8px 0 32px; }
+    h1 { font-size: clamp(1.6rem, 4vw, 2.1rem); line-height: 1.2; margin: 16px 0 8px; }
+    h2 { font-size: 1.25rem; margin: 32px 0 8px; }
+    h3 { font-size: 1.05rem; margin: 20px 0 6px; }
+    p { margin: 0 0 12px; }
+    .lead { color: var(--muted); font-size: 1.05rem; }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 20px;
+    }
+
+    label { display: block; font-weight: 600; margin-bottom: 6px; }
+    .input-row { display: flex; gap: 10px; flex-wrap: wrap; }
+    .input-row input {
+      flex: 1 1 260px; min-width: 0;
+      font: inherit; color: var(--text); background: var(--surface);
+      border: 1px solid var(--border); border-radius: 8px;
+      padding: 12px 14px;
+    }
+    .input-row input:focus { border-color: var(--accent); }
+    .input-row input[aria-invalid="true"] { border-color: var(--error-border); }
+    .input-wrap { position: relative; flex: 1 1 260px; min-width: 0; display: flex; }
+    .input-wrap input { flex: 1 1 auto; width: 100%; padding-right: 46px; }
+    .field-button {
+      position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+      width: 36px; height: 36px; padding: 0; border-radius: 6px;
+      border: 1px solid transparent; background: transparent; color: var(--muted);
+      display: inline-flex; align-items: center; justify-content: center; cursor: pointer;
+    }
+    .field-button:hover { color: var(--accent); background: var(--code-bg); }
+    .field-button svg { width: 20px; height: 20px; }
+    .field-button[hidden] { display: none; }
+    button, .button {
+      font: inherit; font-weight: 600; cursor: pointer;
+      border-radius: 8px; padding: 12px 18px;
+      border: 1px solid transparent; text-decoration: none;
+      display: inline-flex; align-items: center; gap: 8px; justify-content: center;
+    }
+    .btn-primary { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
+    .btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+    .btn-primary[disabled] { opacity: 0.7; cursor: progress; }
+    .btn-secondary { background: var(--surface); color: var(--text); border-color: var(--border); }
+    .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+    .hint { color: var(--muted); font-size: 0.92rem; margin: 8px 0 0; }
+    .example {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+      font-size: 0.92em; font-weight: 500; line-height: inherit;
+      color: var(--accent); background: var(--code-bg);
+      border: 1px solid transparent; border-radius: 4px; padding: 0.1em 0.35em;
+      cursor: pointer; text-decoration: underline; text-decoration-color: transparent;
+      overflow-wrap: anywhere;
+    }
+    .example:hover { color: var(--accent-hover); text-decoration-color: currentColor; }
+
+    .result { margin-top: 20px; }
+    .result:empty { display: none; }
+    .status {
+      border-radius: var(--radius); padding: 16px 18px;
+      border: 1px solid var(--border); background: var(--surface);
+    }
+    .status h2 { margin: 0 0 6px; font-size: 1.1rem; }
+    .status p:last-child { margin-bottom: 0; }
+    .status-error { background: var(--error-bg); border-color: var(--error-border); color: var(--error-text); }
+    .status-warn { background: var(--warn-bg); border-color: var(--warn-border); color: var(--warn-text); }
+    .status-info { background: var(--surface); }
+    .status-error a:not(.button), .status-warn a:not(.button) { color: inherit; text-decoration: underline; }
+    .status .btn-primary { color: var(--accent-text); }
+    .status .actions { margin-top: 12px; }
+
+    .loading { display: flex; align-items: center; gap: 12px; color: var(--muted); }
+    .spinner {
+      width: 20px; height: 20px; border-radius: 50%;
+      border: 3px solid var(--border); border-top-color: var(--accent);
+      animation: spin 0.9s linear infinite; flex: 0 0 auto;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @media (prefers-reduced-motion: reduce) { .spinner { animation: none; } }
+
+    .result-card .eyebrow {
+      text-transform: uppercase; letter-spacing: 0.06em; font-size: 0.78rem;
+      color: var(--muted); font-weight: 600; margin: 0 0 4px;
+    }
+    .result-card .created { font-size: clamp(1.25rem, 3.5vw, 1.6rem); font-weight: 700; margin: 0; line-height: 1.3; }
+    .result-card .age { font-size: 1.1rem; color: var(--accent); font-weight: 600; margin: 4px 0 16px; }
+    dl.facts { display: grid; grid-template-columns: max-content 1fr; gap: 6px 16px; margin: 0 0 12px; }
+    dl.facts dt { color: var(--muted); font-weight: 500; }
+    dl.facts dd { margin: 0; overflow-wrap: anywhere; }
+    @media (max-width: 480px) {
+      dl.facts { grid-template-columns: 1fr; gap: 2px; }
+      dl.facts dd { margin-bottom: 8px; }
+    }
+    .badge {
+      display: inline-block; font-size: 0.78rem; font-weight: 600;
+      padding: 1px 8px; border-radius: 999px; margin-left: 6px; vertical-align: middle;
+      background: var(--code-bg); color: var(--muted);
+    }
+    .note {
+      margin: 0 0 12px; padding: 10px 12px; border-radius: 8px; font-size: 0.93rem;
+      background: var(--warn-bg); border: 1px solid var(--warn-border); color: var(--warn-text);
+    }
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    .share-fallback { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; width: 100%; }
+    .share-fallback input {
+      flex: 1 1 220px; min-width: 0; font: inherit; padding: 8px 10px;
+      border: 1px solid var(--border); border-radius: 8px; color: var(--text); background: var(--surface);
+    }
+    .share-status { font-size: 0.92rem; color: var(--muted); margin: 8px 0 0; min-height: 1.4em; }
+    .meta { color: var(--muted); font-size: 0.88rem; margin: 12px 0 0; }
+    .meta button { background: none; border: none; padding: 0; color: var(--accent); text-decoration: underline; font-weight: 500; }
+
+    .table-wrap { overflow-x: auto; margin: 0 0 12px; }
+    table { border-collapse: collapse; width: 100%; font-size: 0.95rem; }
+    th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    th { font-weight: 600; }
+    ul { padding-left: 20px; }
+    li { margin-bottom: 4px; }
+
+    footer {
+      border-top: 1px solid var(--border); padding: 20px 0 32px;
+      color: var(--muted); font-size: 0.9rem;
+    }
+    footer p { margin: 0 0 6px; }
+    footer a { color: inherit; }
+    noscript .status { margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="container">
+      <a class="brand" href="./" aria-label="Git Profile Age home">
+        <svg viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+          <rect width="64" height="64" rx="14" fill="#0f766e"/>
+          <path d="M18 14v36" stroke="#fff" stroke-width="4" stroke-linecap="round" fill="none"/>
+          <path d="M18 32c0-8 6-10 14-10" stroke="#fff" stroke-width="4" stroke-linecap="round" fill="none"/>
+          <circle cx="18" cy="14" r="5" fill="#fff"/>
+          <circle cx="18" cy="50" r="5" fill="#fff"/>
+          <circle cx="42" cy="40" r="13" fill="#fff"/>
+          <circle cx="42" cy="40" r="10.5" fill="#0f766e"/>
+          <path d="M42 33v7.5l5 3" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </svg>
+        <span>Git Profile Age</span>
+      </a>
+    </div>
+  </header>
+
+  <main id="main">
+    <div class="container">
+      <section aria-labelledby="page-title">
+        <h1 id="page-title">When was this Git profile created?</h1>
+        <p class="lead">Paste a GitHub, GitLab, Bitbucket, Codeberg or other Git profile link. The tool detects the service, asks its public API and shows the account creation date and age.</p>
+
+        <form id="lookup-form" class="card" novalidate>
+          <label for="profile-url">Git profile URL</label>
+          <div class="input-row">
+            <div class="input-wrap">
+              <input id="profile-url" name="url" type="text" inputmode="url" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="https://github.com/username" aria-describedby="url-hint" required>
+              <button type="button" id="paste-button" class="field-button" aria-label="Paste link from clipboard and check" title="Paste from clipboard" hidden>
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M9 12h6M9 16h6"/></svg>
+              </button>
+              <button type="button" id="clear-button" class="field-button" aria-label="Clear the field and result" title="Clear" hidden>
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+              </button>
+            </div>
+            <button type="submit" id="submit-button" class="btn-primary">Check profile</button>
+          </div>
+          <p id="url-hint" class="hint">Profile and repository links both work. Try an example: <button type="button" class="example" data-example="github.com/torvalds">github.com/torvalds</button>, <button type="button" class="example" data-example="gitlab.com/gitlab-org/gitlab">gitlab.com/gitlab-org/gitlab</button> or <button type="button" class="example" data-example="bitbucket.org/atlassian/">bitbucket.org/atlassian/</button>. Press Enter to check.</p>
+        </form>
+
+        <div id="result" class="result" role="status" aria-live="polite" aria-atomic="true"></div>
+        <noscript>
+          <div class="status status-warn">
+            <h2>JavaScript is required</h2>
+            <p>This tool queries the Git service's public API directly from your browser, so it needs JavaScript. No data is sent anywhere else.</p>
+          </div>
+        </noscript>
+      </section>
+
+      <section aria-labelledby="supported-title">
+        <h2 id="supported-title">Supported Git hosting services</h2>
+        <p>Service detection is automatic. Creation dates are read from each service's public API without any API key. Where a service does not publish the date, the tool verifies the profile and links you to the page instead.</p>
+        <div class="table-wrap">
+          <table id="services-table">
+            <caption class="visually-hidden">Git hosting services and how each is supported</caption>
+            <thead>
+              <tr><th scope="col">Service</th><th scope="col">Creation date</th><th scope="col">Notes</th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <p>Another Git hosting service you'd like to see here? <a href="https://www.linkedin.com/in/yaroslav-podorvanov/" rel="noopener">Contact me on LinkedIn</a>.</p>
+      </section>
+
+      <section aria-labelledby="why-title">
+        <h2 id="why-title">GitHub account age and developer profile verification</h2>
+        <p>The creation date of a GitHub, GitLab or Bitbucket profile is a small but useful signal when you verify a developer's experience. A profile created in 2012 that matches a résumé claiming ten years of open-source work tells a consistent story. A profile created last month next to a claim of "eight years of GitHub contributions" is worth a follow-up question.</p>
+        <p>Keep the signal in proportion. Many experienced engineers work in private repositories, switch accounts when they change employers, or simply joined a hosting service late. A young account is a reason to ask, not a reason to reject. Combine the profile age with commit history, project quality and the interview itself.</p>
+        <h3>How to check when a GitHub profile was created</h3>
+        <ol>
+          <li>Copy the profile link, for example <code>https://github.com/username</code>. A repository link works too; the tool uses the owner.</li>
+          <li>Paste it into the field above and press Enter.</li>
+          <li>Read the exact creation timestamp returned by the API and the calculated profile age.</li>
+          <li>Use <strong>Share result</strong> to send a link that opens the same check to a colleague.</li>
+        </ol>
+        <h3>What the date means on each service</h3>
+        <ul>
+          <li><strong>GitHub</strong> returns the exact account creation time for users and organizations.</li>
+          <li><strong>GitLab</strong> publishes creation dates for groups, but not for personal accounts without signing in. For users, the tool confirms the profile exists and links to the page, where GitLab shows "Member since".</li>
+          <li><strong>Bitbucket</strong> exposes the creation date of a workspace. Bitbucket introduced workspaces on 29 November 2018, so accounts older than that show the migration date rather than the original signup.</li>
+          <li><strong>Codeberg, Gitea, Gitee, GitCode and Hugging Face</strong> return the account creation date for users; Gitee and Hugging Face do not publish it for organizations.</li>
+          <li><strong>Launchpad, SourceHut, SourceForge, Azure DevOps and NotABug</strong> are detected, but their APIs are not usable from a web page without a key or a bot challenge, so the tool links you to the profile page instead.</li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="privacy-title">
+        <h2 id="privacy-title">Privacy</h2>
+        <p>Git Profile Age collects no personal data. There are no analytics, no tracking scripts, no tracking pixels, no cookies, no user accounts and no backend: the site is a single static page. The profile URL you enter is processed in your browser and sent only to the public API of the Git service it belongs to, so that service sees the request like any other visit to its API. Results are cached in your browser's local storage for seven days so repeated checks don't hit the API again; nothing leaves your device apart from that one API request.</p>
+        <p>The tool cannot control how GitHub, GitLab, Bitbucket or any other service logs API requests. Their own privacy policies apply to those requests.</p>
+      </section>
+
+      <section aria-labelledby="uk-title" lang="uk">
+        <h2 id="uk-title">Перевірка профілю розробника: дата створення GitHub профілю та вік акаунта</h2>
+        <p>Git Profile Age допомагає рекрутерам і hiring-менеджерам швидко дізнатися дату створення GitHub профілю, вік GitHub акаунта, а також дату створення профілю на GitLab, Bitbucket, Codeberg та інших Git-сервісах. Вставте посилання на профіль кандидата, і інструмент автоматично визначить сервіс, звернеться до його публічного API та покаже точну дату реєстрації і вік профілю.</p>
+        <p>Вік акаунта — це лише один із сигналів під час перевірки досвіду розробника. Він добре доповнює резюме та історію комітів, але не замінює технічне інтерв'ю: багато інженерів працюють у приватних репозиторіях або змінюють акаунти. Використовуйте дату створення профілю як привід для уточнюючого запитання, а не як остаточний висновок.</p>
+        <p>Сервіс працює повністю у браузері, не збирає персональних даних, не використовує аналітику та трекери. Посилання на профіль обробляється локально і надсилається лише до публічного API відповідного Git-сервісу.</p>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>Git Profile Age is free and open source: <a href="https://github.com/doutivity/git-profile-age" rel="noopener">github.com/doutivity/git-profile-age</a> (MIT).</p>
+      <p>No analytics, no tracking, no cookies. Requests go directly from your browser to the Git service's public API.</p>
+      <p>Missing a Git service? <a href="https://www.linkedin.com/in/yaroslav-podorvanov/" rel="noopener">Request it on LinkedIn</a>.</p>
+    </div>
+  </footer>
+
+  <script>
+  (function () {
+    'use strict';
+
+    // ------------------------------------------------------------------
+    // Configuration
+    // ------------------------------------------------------------------
+    var CONTACT_URL = 'https://www.linkedin.com/in/yaroslav-podorvanov/';
+    var REQUEST_TIMEOUT_MS = 10000;
+    var CACHE_PREFIX = 'git-profile-age:v1:';
+    var CACHE_TTL_MS = 7 * 24 * 60 * 60 * 1000;
+    var GENERIC_HANDLE = /^[A-Za-z0-9][A-Za-z0-9._-]{0,99}$/;
+
+    // ------------------------------------------------------------------
+    // Errors
+    // ------------------------------------------------------------------
+    function LookupError(code, details) {
+      this.name = 'LookupError';
+      this.code = code;
+      this.details = details || {};
+      this.message = code;
+    }
+    LookupError.prototype = Object.create(Error.prototype);
+
+    // ------------------------------------------------------------------
+    // HTTP helper: one place that turns fetch results into LookupErrors.
+    // ------------------------------------------------------------------
+    function extractMessage(data) {
+      if (!data || typeof data !== 'object') return '';
+      if (typeof data.message === 'string') return data.message;
+      if (data.error && typeof data.error.message === 'string') return data.error.message;
+      if (typeof data.error === 'string') return data.error;
+      if (typeof data.error_message === 'string') return data.error_message;
+      return '';
+    }
+
+    function rateLimitReset(response) {
+      var reset = response.headers.get('x-ratelimit-reset');
+      if (reset && /^\d+$/.test(reset)) {
+        var ms = Number(reset) * 1000;
+        return ms > Date.now() ? ms : null;
+      }
+      var retryAfter = response.headers.get('retry-after');
+      if (retryAfter && /^\d+$/.test(retryAfter)) return Date.now() + Number(retryAfter) * 1000;
+      return null;
+    }
+
+    function looksRateLimited(response, data) {
+      if (response.headers.get('x-ratelimit-remaining') === '0') return true;
+      return /rate limit/i.test(extractMessage(data));
+    }
+
+    function apiGet(url) {
+      var controller = typeof AbortController === 'function' ? new AbortController() : null;
+      var timer = controller ? setTimeout(function () { controller.abort(); }, REQUEST_TIMEOUT_MS) : null;
+      var init = {
+        method: 'GET',
+        headers: { Accept: 'application/json' },
+        credentials: 'omit',
+        referrerPolicy: 'no-referrer',
+        signal: controller ? controller.signal : undefined
+      };
+      return fetch(url, init).then(function (response) {
+        return response.text().then(function (text) {
+          var data;
+          try { data = text ? JSON.parse(text) : null; } catch (e) { data = undefined; }
+          return { response: response, data: data };
+        });
+      }).catch(function (error) {
+        if (error && error.name === 'AbortError') throw new LookupError('timeout');
+        throw new LookupError('network');
+      }).then(function (result) {
+        if (timer) clearTimeout(timer);
+        var response = result.response;
+        var data = result.data;
+        var status = response.status;
+        if (status === 404 || status === 410) throw new LookupError('not_found');
+        if (status === 429 || (status === 403 && looksRateLimited(response, data))) {
+          throw new LookupError('rate_limited', { retryAt: rateLimitReset(response) });
+        }
+        if (status === 401 || status === 403) throw new LookupError('forbidden', { message: extractMessage(data) });
+        if (status >= 500) throw new LookupError('server_error');
+        if (!response.ok) throw new LookupError('unexpected', { status: status });
+        if (data === undefined) throw new LookupError('malformed');
+        return { data: data, response: response };
+      }, function (error) {
+        if (timer) clearTimeout(timer);
+        throw error;
+      });
+    }
+
+    // ------------------------------------------------------------------
+    // Service adapters
+    //
+    // Every adapter defines:
+    //   id, name        service identity
+    //   hosts           hostnames that identify the service (lowercase)
+    //   parse(segments) path segments -> profile handle, or null when the
+    //                   URL is not a profile / repository URL
+    //   profileUrl(h)   normalized profile URL
+    //   manualUrl(h)    where the user can look manually
+    //   apiUrl(h)       public API endpoint (support: 'auto')
+    //   parseResponse   API JSON -> { createdAt, kind, precision?, note? }
+    //   lookup(h)       optional custom multi-step lookup
+    //   support         'auto' | 'partial' | 'manual'
+    //   summary         one line for the "supported services" table
+    // ------------------------------------------------------------------
+    var SERVICES = [];
+    function defineService(service) { SERVICES.push(service); return service; }
+
+    function stripGitSuffix(name) { return name.replace(/\.git$/i, ''); }
+
+    function firstSegmentParser(reserved, options) {
+      options = options || {};
+      var prefixes = options.prefixes || [];
+      return function (segments) {
+        if (!segments.length) return null;
+        var first = segments[0];
+        var handle = first;
+        if (prefixes.indexOf(first.toLowerCase()) !== -1) {
+          handle = segments[1];
+          if (!handle) return null;
+        } else if (reserved.indexOf(first.toLowerCase()) !== -1) {
+          return null;
+        }
+        handle = stripGitSuffix(handle);
+        return GENERIC_HANDLE.test(handle) ? handle : null;
+      };
+    }
+
+    function tildeParser(segments) {
+      if (!segments.length) return null;
+      var first = segments[0];
+      if (first.charAt(0) !== '~') return null;
+      var handle = stripGitSuffix(first.slice(1));
+      return GENERIC_HANDLE.test(handle) ? handle : null;
+    }
+
+    // ---- GitHub -------------------------------------------------------
+    defineService({
+      id: 'github',
+      name: 'GitHub',
+      hosts: ['github.com', 'www.github.com', 'gist.github.com'],
+      support: 'auto',
+      summary: 'Users and organizations. Exact timestamp from the public REST API (60 requests per hour per network).',
+      parse: firstSegmentParser([
+        'about', 'account', 'apps', 'blog', 'business', 'codespaces', 'collections', 'contact', 'copilot',
+        'customer-stories', 'dashboard', 'discussions', 'enterprise', 'events', 'explore', 'features', 'git',
+        'github', 'help', 'integrations', 'issues', 'join', 'login', 'logout', 'marketplace', 'mobile', 'new',
+        'nonprofit', 'notifications', 'open-source', 'organizations', 'password', 'pricing', 'pulls', 'readme',
+        'search', 'security', 'sessions', 'settings', 'signup', 'site', 'sitemap', 'sponsors', 'stars',
+        'support', 'team', 'topics', 'trending', 'watching', 'api', 'status', 'services', 'solutions',
+        'resources', 'education', 'premium-support', 'customer-terms', 'terms', 'privacy', 'careers'
+      ], { prefixes: ['orgs', 'users'] }),
+      profileUrl: function (h) { return 'https://github.com/' + h; },
+      manualUrl: function (h) { return 'https://github.com/' + h; },
+      apiUrl: function (h) { return 'https://api.github.com/users/' + encodeURIComponent(h); },
+      parseResponse: function (data) {
+        return { createdAt: data.created_at, kind: data.type === 'Organization' ? 'Organization' : 'User' };
+      }
+    });
+
+    // ---- GitLab (gitlab.com and verified self-hosted instances) ------
+    var GITLAB_RESERVED = [
+      '-', 'abuse_reports', 'admin', 'api', 'autocomplete', 'ci', 'dashboard', 'explore', 'favicon.ico',
+      'files', 'health_check', 'help', 'import', 'invites', 'jwt', 'oauth', 'profile', 'projects', 'public',
+      'robots.txt', 's', 'search', 'sent_notifications', 'sign_in', 'sign_up', 'snippets', 'u', 'unsubscribes',
+      'uploads', 'users', 'groups', 'v2', '.well-known', 'assets', 'pricing', 'features', 'blog', 'solutions',
+      'install', 'free-trial', 'get-started', 'company', 'stages-devops-lifecycle', 'topics'
+    ];
+
+    function gitlabService(options) {
+      var base = 'https://' + options.host;
+      var api = base + '/api/v4';
+      return defineService({
+        id: options.id,
+        name: options.name,
+        hosts: [options.host].concat(options.aliases || []),
+        support: 'partial',
+        summary: options.summary || 'Groups: exact timestamp. Personal accounts: GitLab hides the date from anonymous API requests, so the tool verifies the user and links to the profile ("Member since").',
+        parse: function (segments) {
+          if (!segments.length) return null;
+          var first = segments[0].toLowerCase();
+          if (first === 'groups' || first === 'users') {
+            var rest = segments.slice(1);
+            var path = [];
+            for (var i = 0; i < rest.length; i++) {
+              if (rest[i] === '-') break;
+              path.push(stripGitSuffix(rest[i]));
+            }
+            if (first === 'users') path = path.slice(0, 1);
+            if (!path.length) return null;
+            for (var j = 0; j < path.length; j++) if (!GENERIC_HANDLE.test(path[j])) return null;
+            return path.join('/');
+          }
+          if (GITLAB_RESERVED.indexOf(first) !== -1) return null;
+          var handle = stripGitSuffix(segments[0]);
+          return GENERIC_HANDLE.test(handle) ? handle : null;
+        },
+        profileUrl: function (h) { return base + '/' + h; },
+        manualUrl: function (h) { return base + '/' + h; },
+        lookup: function (handle) {
+          var isNested = handle.indexOf('/') !== -1;
+          var userCheck = isNested
+            ? Promise.resolve(null)
+            : apiGet(api + '/users?username=' + encodeURIComponent(handle)).then(function (res) {
+                if (!Array.isArray(res.data)) throw new LookupError('malformed');
+                return res.data.length ? res.data[0] : null;
+              });
+          return userCheck.then(function (user) {
+            if (user) {
+              if (typeof user.created_at === 'string') return { createdAt: user.created_at, kind: 'User' };
+              throw new LookupError('date_unavailable', {
+                reason: options.name + ' does not publish creation dates of personal accounts to anonymous API requests. The profile page shows a "Member since" date.'
+              });
+            }
+            return apiGet(api + '/groups/' + encodeURIComponent(handle) + '?with_projects=false').then(function (res) {
+              if (!res.data || typeof res.data.created_at !== 'string') throw new LookupError('malformed');
+              return { createdAt: res.data.created_at, kind: 'Group' };
+            });
+          });
+        }
+      });
+    }
+
+    gitlabService({ id: 'gitlab', name: 'GitLab', host: 'gitlab.com', aliases: ['www.gitlab.com'] });
+
+    // ---- Bitbucket ----------------------------------------------------
+    defineService({
+      id: 'bitbucket',
+      name: 'Bitbucket',
+      hosts: ['bitbucket.org', 'www.bitbucket.org'],
+      support: 'auto',
+      summary: 'Workspace creation date. Accounts older than 29 Nov 2018 show that date, when Bitbucket migrated all accounts to workspaces.',
+      parse: firstSegmentParser([
+        'account', 'api', 'blog', 'dashboard', 'explore', 'features', 'gateway', 'integrations', 'login',
+        'plugins', 'pricing', 'product', 'repo', 'signup', 'site', 'snippets', 'socialauth', 'support',
+        'whats-new', 'workspace', 'xhr', '!api', 'ui', 'static', 'j', 'plans-pricing', 'sitemap'
+      ]),
+      profileUrl: function (h) { return 'https://bitbucket.org/' + h + '/'; },
+      manualUrl: function (h) { return 'https://bitbucket.org/' + h + '/'; },
+      apiUrl: function (h) { return 'https://api.bitbucket.org/2.0/workspaces/' + encodeURIComponent(h); },
+      parseResponse: function (data) {
+        return {
+          createdAt: data.created_on,
+          kind: 'Workspace',
+          note: 'Bitbucket publishes the creation date of the workspace, not of the underlying Atlassian account. Workspaces were introduced on 29 November 2018; accounts created before that show the migration date.'
+        };
+      }
+    });
+
+    // ---- Forgejo / Gitea instances ------------------------------------
+    var FORGEJO_RESERVED = [
+      '-', '.well-known', 'admin', 'api', 'assets', 'attachments', 'avatars', 'captcha', 'devtest', 'explore',
+      'issues', 'login', 'metrics', 'milestones', 'notifications', 'org', 'pulls', 'repo', 'ssh_info',
+      'swagger', 'user', 'v2', 'favicon.ico', 'robots.txt', 'manifest.json', 'sitemap.xml'
+    ];
+
+    function forgejoService(options) {
+      var base = 'https://' + options.host;
+      return defineService({
+        id: options.id,
+        name: options.name,
+        hosts: [options.host].concat(options.aliases || []),
+        support: 'auto',
+        summary: options.summary,
+        parse: firstSegmentParser(FORGEJO_RESERVED),
+        profileUrl: function (h) { return base + '/' + h; },
+        manualUrl: function (h) { return base + '/' + h; },
+        apiUrl: function (h) { return base + '/api/v1/users/' + encodeURIComponent(h); },
+        parseResponse: function (data) {
+          return { createdAt: data.created, kind: 'Account' };
+        }
+      });
+    }
+
+    forgejoService({ id: 'codeberg', name: 'Codeberg', host: 'codeberg.org', summary: 'Forgejo. Users and organizations, exact timestamp.' });
+    forgejoService({ id: 'gitea', name: 'Gitea.com', host: 'gitea.com', summary: 'Gitea. Users and organizations, exact timestamp.' });
+
+    // ---- Gitee --------------------------------------------------------
+    defineService({
+      id: 'gitee',
+      name: 'Gitee',
+      hosts: ['gitee.com', 'www.gitee.com'],
+      support: 'partial',
+      summary: 'Users: exact timestamp. Organizations: verified and linked (the API does not include their creation date).',
+      parse: firstSegmentParser([
+        '-', 'about', 'activity', 'all-projects', 'api', 'assets', 'contact', 'dashboard', 'education',
+        'enterprises', 'events', 'explore', 'gists', 'gitee-stars', 'help', 'hellogitee', 'login',
+        'notifications', 'oauth', 'open-source', 'privacy', 'profile', 'projects', 'search', 'signup',
+        'static', 'terms', 'uploads', 'organizations', 'enterprise', 'features', 'ai', 'go', 'store'
+      ], { prefixes: ['organizations'] }),
+      profileUrl: function (h) { return 'https://gitee.com/' + h; },
+      manualUrl: function (h) { return 'https://gitee.com/' + h; },
+      lookup: function (handle) {
+        return apiGet('https://gitee.com/api/v5/users/' + encodeURIComponent(handle)).then(function (res) {
+          if (!res.data || typeof res.data.created_at !== 'string') throw new LookupError('malformed');
+          return { createdAt: res.data.created_at, kind: 'User' };
+        }, function (error) {
+          if (!(error instanceof LookupError) || error.code !== 'not_found') throw error;
+          return apiGet('https://gitee.com/api/v5/orgs/' + encodeURIComponent(handle)).then(function (res) {
+            if (res.data && typeof res.data.created_at === 'string') return { createdAt: res.data.created_at, kind: 'Organization' };
+            throw new LookupError('date_unavailable', { reason: 'Gitee does not include the creation date of organizations in its public API.' });
+          });
+        });
+      }
+    });
+
+    // ---- GitCode ------------------------------------------------------
+    defineService({
+      id: 'gitcode',
+      name: 'GitCode',
+      hosts: ['gitcode.com', 'www.gitcode.com', 'gitcode.net'],
+      support: 'auto',
+      summary: 'Users and organizations, exact timestamp.',
+      parse: firstSegmentParser([
+        '-', 'about', 'activity', 'api', 'dashboard', 'docs', 'enterprises', 'events', 'explore', 'gists',
+        'help', 'login', 'notifications', 'orgs', 'organizations', 'register', 'search', 'settings', 'topics',
+        'ai', 'assets', 'static', 'trending', 'hot', 'topic'
+      ], { prefixes: ['orgs', 'organizations'] }),
+      profileUrl: function (h) { return 'https://gitcode.com/' + h; },
+      manualUrl: function (h) { return 'https://gitcode.com/' + h; },
+      lookup: function (handle) {
+        return apiGet('https://api.gitcode.com/api/v5/users/' + encodeURIComponent(handle)).then(function (res) {
+          if (!res.data || typeof res.data.created_at !== 'string') throw new LookupError('malformed');
+          return { createdAt: res.data.created_at, kind: 'User' };
+        }, function (error) {
+          if (!(error instanceof LookupError) || error.code !== 'not_found') throw error;
+          return apiGet('https://api.gitcode.com/api/v5/orgs/' + encodeURIComponent(handle)).then(function (res) {
+            if (!res.data || typeof res.data.created_at !== 'string') throw new LookupError('malformed');
+            return { createdAt: res.data.created_at, kind: 'Organization' };
+          });
+        });
+      }
+    });
+
+    // ---- Hugging Face (Git-based model, dataset and Space hosting) ----
+    defineService({
+      id: 'huggingface',
+      name: 'Hugging Face',
+      hosts: ['huggingface.co', 'www.huggingface.co', 'hf.co'],
+      support: 'partial',
+      summary: 'Git-based hosting for models, datasets and Spaces. Users: exact timestamp. Organizations: verified and linked.',
+      parse: firstSegmentParser([
+        'api', 'blog', 'brand', 'chat', 'collections', 'docs', 'enterprise', 'front', 'join', 'learn', 'login',
+        'models', 'new', 'organizations', 'papers', 'posts', 'pricing', 'privacy', 'search', 'settings',
+        'static-proxy', 'tasks', 'terms-of-service', 'welcome', 'inference-endpoints', 'inference-api',
+        'autotrain', 'hardware', 'support', 'security', 'jobs', 'changelog', 'shop', 'notifications', 'avatars'
+      ], { prefixes: ['datasets', 'spaces'] }),
+      profileUrl: function (h) { return 'https://huggingface.co/' + h; },
+      manualUrl: function (h) { return 'https://huggingface.co/' + h; },
+      lookup: function (handle) {
+        return apiGet('https://huggingface.co/api/users/' + encodeURIComponent(handle) + '/overview').then(function (res) {
+          if (!res.data || typeof res.data.createdAt !== 'string') throw new LookupError('malformed');
+          return { createdAt: res.data.createdAt, kind: 'User' };
+        }, function (error) {
+          if (!(error instanceof LookupError) || error.code !== 'not_found') throw error;
+          return apiGet('https://huggingface.co/api/organizations/' + encodeURIComponent(handle) + '/overview').then(function (res) {
+            if (res.data && typeof res.data.createdAt === 'string') return { createdAt: res.data.createdAt, kind: 'Organization' };
+            throw new LookupError('date_unavailable', { reason: 'Hugging Face does not include the creation date of organizations in its public API.' });
+          });
+        });
+      }
+    });
+
+    // ---- Self-hosted instances (verified end-to-end from a browser: public
+    //      API, CORS enabled, no anti-bot challenge) ------------------------
+    var SELF_HOSTED_GITLAB_SUMMARY = 'Self-hosted GitLab. Groups: exact timestamp; personal accounts: verified and linked.';
+    gitlabService({ id: 'framagit', name: 'Framagit', host: 'framagit.org', summary: SELF_HOSTED_GITLAB_SUMMARY });
+    gitlabService({ id: 'torproject', name: 'Tor Project GitLab', host: 'gitlab.torproject.org', summary: SELF_HOSTED_GITLAB_SUMMARY });
+    forgejoService({ id: 'fsfe', name: 'FSFE Git', host: 'git.fsfe.org', summary: 'Gitea instance of the Free Software Foundation Europe. Users and organizations, exact timestamp.' });
+
+    // ---- Manual-only services (detected, no usable public API) --------
+    defineService({
+      id: 'sourceforge',
+      name: 'SourceForge',
+      hosts: ['sourceforge.net', 'www.sourceforge.net'],
+      support: 'manual',
+      summary: 'User profiles detected and linked. SourceForge\'s REST API answers browser requests with a bot challenge; the profile page shows a "Joined" date.',
+      manualReason: 'SourceForge has a public REST API with the account creation date, but its bot protection blocks requests coming from web pages. The profile page shows a "Joined" date.',
+      parse: function (segments) {
+        if (segments.length < 2) return null;
+        var first = segments[0].toLowerCase();
+        if (first !== 'u' && first !== 'users') return null;
+        var handle = segments[1];
+        return GENERIC_HANDLE.test(handle) ? handle : null;
+      },
+      profileUrl: function (h) { return 'https://sourceforge.net/u/' + h + '/'; },
+      manualUrl: function (h) { return 'https://sourceforge.net/u/' + h + '/profile/'; }
+    });
+
+    defineService({
+      id: 'launchpad',
+      name: 'Launchpad',
+      hosts: ['launchpad.net', 'www.launchpad.net'],
+      support: 'manual',
+      summary: 'Detected and linked. The Launchpad API blocks browser requests; the profile page shows "Member since".',
+      manualReason: 'Launchpad publishes creation dates through its API, but the API does not allow requests from web pages. The profile page shows a "Member since" date.',
+      parse: tildeParser,
+      profileUrl: function (h) { return 'https://launchpad.net/~' + h; },
+      manualUrl: function (h) { return 'https://launchpad.net/~' + h; }
+    });
+
+    defineService({
+      id: 'sourcehut',
+      name: 'SourceHut',
+      hosts: ['sr.ht', 'git.sr.ht', 'hg.sr.ht', 'meta.sr.ht', 'lists.sr.ht', 'todo.sr.ht', 'builds.sr.ht', 'paste.sr.ht'],
+      support: 'manual',
+      summary: 'Detected and linked. The SourceHut API requires authentication.',
+      manualReason: 'SourceHut only serves account details to authenticated API clients, so the creation date cannot be read from a static web page.',
+      parse: tildeParser,
+      profileUrl: function (h) { return 'https://sr.ht/~' + h + '/'; },
+      manualUrl: function (h) { return 'https://sr.ht/~' + h + '/'; }
+    });
+
+    defineService({
+      id: 'azure-devops',
+      name: 'Azure DevOps',
+      hosts: ['dev.azure.com'],
+      support: 'manual',
+      summary: 'Organizations detected and linked. Azure DevOps requires sign-in for profile and organization details.',
+      manualReason: 'Azure DevOps does not offer anonymous API access to organization or profile details.',
+      parse: firstSegmentParser(['_apis', '_signin', '_static', '_usersSettings']),
+      profileUrl: function (h) { return 'https://dev.azure.com/' + h; },
+      manualUrl: function (h) { return 'https://dev.azure.com/' + h; }
+    });
+
+    defineService({
+      id: 'notabug',
+      name: 'NotABug',
+      hosts: ['notabug.org'],
+      support: 'manual',
+      summary: 'Detected and linked. The Gogs API does not include account creation dates.',
+      manualReason: 'NotABug runs Gogs, whose public API does not include the account creation date.',
+      parse: firstSegmentParser(FORGEJO_RESERVED),
+      profileUrl: function (h) { return 'https://notabug.org/' + h; },
+      manualUrl: function (h) { return 'https://notabug.org/' + h; }
+    });
+
+    // ------------------------------------------------------------------
+    // URL analysis and normalization
+    // ------------------------------------------------------------------
+    function findServiceByHost(host) {
+      for (var i = 0; i < SERVICES.length; i++) {
+        if (SERVICES[i].hosts.indexOf(host) !== -1) return SERVICES[i];
+      }
+      return null;
+    }
+
+    function pathSegments(url) {
+      return url.pathname.split('/').map(function (segment) {
+        try { return decodeURIComponent(segment); } catch (e) { return segment; }
+      }).filter(Boolean);
+    }
+
+    function analyzeInput(raw) {
+      var text = String(raw || '').trim();
+      if (!text) return { status: 'invalid', reason: 'empty' };
+      if (/\s/.test(text)) return { status: 'invalid', reason: 'not_url' };
+
+      // SSH clone URLs: git@github.com:user/repo.git or ssh://git@host/user/repo
+      var ssh = text.match(/^(?:ssh:\/\/)?[\w.-]+@([\w.-]+)[:/](.+)$/);
+      if (ssh) text = 'https://' + ssh[1] + '/' + ssh[2];
+      if (/^\/\//.test(text)) text = 'https:' + text;
+      if (!/^[a-z][a-z0-9+.-]*:\/\//i.test(text)) text = 'https://' + text;
+
+      var url;
+      try { url = new URL(text); } catch (e) { return { status: 'invalid', reason: 'not_url' }; }
+      if (url.protocol !== 'https:' && url.protocol !== 'http:') return { status: 'invalid', reason: 'not_url' };
+
+      var host = url.hostname.toLowerCase().replace(/\.$/, '');
+      if (!host || host.indexOf('.') === -1) return { status: 'invalid', reason: 'not_url' };
+
+      var service = findServiceByHost(host);
+      if (!service) return { status: 'unsupported', host: host };
+
+      var handle = service.parse(pathSegments(url));
+      if (!handle) return { status: 'invalid', reason: 'not_profile', service: service };
+
+      return { status: 'ok', service: service, handle: handle, profileUrl: service.profileUrl(handle) };
+    }
+
+    // ------------------------------------------------------------------
+    // Lookup runner
+    // ------------------------------------------------------------------
+    function finalizeResult(result) {
+      if (!result || typeof result.createdAt !== 'string' || isNaN(Date.parse(result.createdAt))) {
+        throw new LookupError('malformed');
+      }
+      return {
+        createdAt: result.createdAt,
+        precision: result.precision === 'day' ? 'day' : 'time',
+        kind: result.kind || 'Profile',
+        note: result.note || ''
+      };
+    }
+
+    function lookupProfile(service, handle) {
+      if (service.support === 'manual') return Promise.reject(new LookupError('manual_only'));
+      var run = service.lookup
+        ? service.lookup(handle)
+        : apiGet(service.apiUrl(handle)).then(function (res) { return service.parseResponse(res.data, res.response, handle); });
+      return run.then(finalizeResult, function (error) {
+        if (error instanceof LookupError) throw error;
+        throw new LookupError('malformed');
+      });
+    }
+
+    // ------------------------------------------------------------------
+    // Cache: localStorage -> sessionStorage -> in-memory. Never throws.
+    // ------------------------------------------------------------------
+    var storage = (function () {
+      var probeKey = CACHE_PREFIX + '__probe__';
+      var candidates = [
+        function () { return window.localStorage; },
+        function () { return window.sessionStorage; }
+      ];
+      for (var i = 0; i < candidates.length; i++) {
+        try {
+          var store = candidates[i]();
+          store.setItem(probeKey, '1');
+          store.removeItem(probeKey);
+          return wrap(store, i === 0 ? 'localStorage' : 'sessionStorage');
+        } catch (e) { /* unavailable or blocked: try the next one */ }
+      }
+      var memory = {};
+      return {
+        name: 'memory',
+        get: function (k) { return Object.prototype.hasOwnProperty.call(memory, k) ? memory[k] : null; },
+        set: function (k, v) { memory[k] = v; },
+        remove: function (k) { delete memory[k]; },
+        keys: function () { return Object.keys(memory); }
+      };
+      function wrap(store, name) {
+        return {
+          name: name,
+          get: function (k) { return store.getItem(k); },
+          set: function (k, v) { store.setItem(k, v); },
+          remove: function (k) { store.removeItem(k); },
+          keys: function () {
+            var keys = [];
+            for (var j = 0; j < store.length; j++) keys.push(store.key(j));
+            return keys;
+          }
+        };
+      }
+    })();
+
+    function cacheKey(profileUrl) { return CACHE_PREFIX + profileUrl; }
+
+    function cacheGet(profileUrl) {
+      try {
+        var raw = storage.get(cacheKey(profileUrl));
+        if (!raw) return null;
+        var entry = JSON.parse(raw);
+        if (!entry || typeof entry.fetchedAt !== 'number' || typeof entry.createdAt !== 'string') return null;
+        if (Date.now() - entry.fetchedAt > CACHE_TTL_MS) { storage.remove(cacheKey(profileUrl)); return null; }
+        return entry;
+      } catch (e) { return null; }
+    }
+
+    function cachePrune() {
+      try {
+        var keys = storage.keys();
+        for (var i = 0; i < keys.length; i++) {
+          if (keys[i].indexOf(CACHE_PREFIX) !== 0) continue;
+          try {
+            var entry = JSON.parse(storage.get(keys[i]));
+            if (!entry || Date.now() - entry.fetchedAt > CACHE_TTL_MS) storage.remove(keys[i]);
+          } catch (e) { storage.remove(keys[i]); }
+        }
+      } catch (e) { /* ignore */ }
+    }
+
+    function cacheSet(profileUrl, result) {
+      var entry = { createdAt: result.createdAt, precision: result.precision, kind: result.kind, note: result.note, fetchedAt: Date.now() };
+      var raw;
+      try { raw = JSON.stringify(entry); } catch (e) { return; }
+      try { storage.set(cacheKey(profileUrl), raw); return; } catch (e) { /* quota or blocked */ }
+      cachePrune();
+      try { storage.set(cacheKey(profileUrl), raw); } catch (e) { /* give up silently */ }
+    }
+
+    function cacheRemove(profileUrl) {
+      try { storage.remove(cacheKey(profileUrl)); } catch (e) { /* ignore */ }
+    }
+
+    // ------------------------------------------------------------------
+    // Dates
+    // ------------------------------------------------------------------
+    function plural(n, word) { return n + ' ' + word + (n === 1 ? '' : 's'); }
+
+    function ageParts(from, to) {
+      var years = to.getUTCFullYear() - from.getUTCFullYear();
+      var months = to.getUTCMonth() - from.getUTCMonth();
+      var days = to.getUTCDate() - from.getUTCDate();
+      var fromTime = from.getUTCHours() * 3600 + from.getUTCMinutes() * 60 + from.getUTCSeconds();
+      var toTime = to.getUTCHours() * 3600 + to.getUTCMinutes() * 60 + to.getUTCSeconds();
+      if (toTime < fromTime) days -= 1;
+      if (days < 0) {
+        months -= 1;
+        days += new Date(Date.UTC(to.getUTCFullYear(), to.getUTCMonth(), 0)).getUTCDate();
+      }
+      if (months < 0) { years -= 1; months += 12; }
+      return { years: years, months: months, days: days };
+    }
+
+    function formatAge(createdAt, now) {
+      var from = new Date(createdAt);
+      var to = now || new Date();
+      if (to.getTime() - from.getTime() < 60 * 1000) return 'just now';
+      var p = ageParts(from, to);
+      if (p.years < 0) return 'just now';
+      var parts = [];
+      if (p.years > 0) {
+        parts.push(plural(p.years, 'year'));
+        if (p.months > 0) parts.push(plural(p.months, 'month'));
+      } else if (p.months > 0) {
+        parts.push(plural(p.months, 'month'));
+        if (p.days > 0) parts.push(plural(p.days, 'day'));
+      } else if (p.days > 0) {
+        parts.push(plural(p.days, 'day'));
+      } else {
+        return 'less than a day ago';
+      }
+      return parts.join(', ') + ' ago';
+    }
+
+    function formatCreated(createdAt, precision) {
+      var date = new Date(createdAt);
+      try {
+        if (precision === 'day') {
+          return new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' }).format(date);
+        }
+        var datePart = new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' }).format(date);
+        var timePart = new Intl.DateTimeFormat('en-US', { hour: '2-digit', minute: '2-digit', hourCycle: 'h23', timeZone: 'UTC' }).format(date);
+        return datePart + ' at ' + timePart + ' UTC';
+      } catch (e) {
+        return date.toISOString();
+      }
+    }
+
+    function formatRelativeShort(ms) {
+      var minutes = Math.round(ms / 60000);
+      if (minutes < 1) return 'less than a minute';
+      if (minutes < 60) return plural(minutes, 'minute');
+      var hours = Math.round(minutes / 60);
+      if (hours < 48) return plural(hours, 'hour');
+      return plural(Math.round(hours / 24), 'day');
+    }
+
+    // ------------------------------------------------------------------
+    // DOM helpers
+    // ------------------------------------------------------------------
+    function h(tag, attrs, children) {
+      var node = document.createElement(tag);
+      if (attrs) {
+        Object.keys(attrs).forEach(function (key) {
+          var value = attrs[key];
+          if (value === null || value === undefined || value === false) return;
+          if (key === 'text') node.textContent = value;
+          else if (key === 'html') node.innerHTML = value;
+          else if (key.indexOf('on') === 0 && typeof value === 'function') node.addEventListener(key.slice(2), value);
+          else node.setAttribute(key, value === true ? '' : value);
+        });
+      }
+      (children || []).forEach(function (child) {
+        if (child === null || child === undefined || child === false) return;
+        node.appendChild(typeof child === 'string' ? document.createTextNode(child) : child);
+      });
+      return node;
+    }
+
+    function externalLink(href, text, className) {
+      return h('a', { href: href, rel: 'noopener', target: '_blank', 'class': className || null }, [text || href]);
+    }
+
+    function displayUrl(url) { return url.replace(/^https?:\/\//, '').replace(/\/$/, ''); }
+
+    // ------------------------------------------------------------------
+    // UI state
+    // ------------------------------------------------------------------
+    var form = document.getElementById('lookup-form');
+    var input = document.getElementById('profile-url');
+    var submitButton = document.getElementById('submit-button');
+    var resultBox = document.getElementById('result');
+    var pasteButton = document.getElementById('paste-button');
+    var clearButton = document.getElementById('clear-button');
+    var canReadClipboard = !!(navigator.clipboard && typeof navigator.clipboard.readText === 'function');
+    var ageTimer = null;
+    var currentRequest = 0;
+
+    function clearResult() {
+      if (ageTimer) { clearInterval(ageTimer); ageTimer = null; }
+      resultBox.textContent = '';
+    }
+
+    function show(node) {
+      clearResult();
+      resultBox.appendChild(node);
+    }
+
+    function setBusy(busy) {
+      submitButton.disabled = busy;
+      submitButton.textContent = busy ? 'Checking…' : 'Check profile';
+      resultBox.setAttribute('aria-busy', busy ? 'true' : 'false');
+    }
+
+    function statusBox(kind, title, paragraphs, actions) {
+      var box = h('div', { 'class': 'status status-' + kind });
+      box.appendChild(h('h2', { text: title }));
+      paragraphs.forEach(function (p) { box.appendChild(typeof p === 'string' ? h('p', { text: p }) : p); });
+      if (actions && actions.length) box.appendChild(h('div', { 'class': 'actions' }, actions));
+      return box;
+    }
+
+    function manualLinkParagraph(service, handle) {
+      var url = service.manualUrl(handle);
+      return h('p', null, ['Open ', externalLink(url, displayUrl(url)), ' to check the profile manually.']);
+    }
+
+    function showLoading(analysis) {
+      show(h('div', { 'class': 'status status-info loading' }, [
+        h('div', { 'class': 'spinner', 'aria-hidden': 'true' }),
+        h('span', { text: 'Checking ' + displayUrl(analysis.profileUrl) + ' on ' + analysis.service.name + '…' })
+      ]));
+    }
+
+    function showInvalid(analysis) {
+      var title, text;
+      if (analysis.reason === 'empty') {
+        title = 'Enter a profile URL';
+        text = 'Paste a link to a Git profile, for example https://github.com/username.';
+      } else if (analysis.reason === 'not_profile') {
+        title = 'This link is not a profile';
+        text = 'It points to ' + analysis.service.name + ', but not to a user, organization or repository page, so the tool cannot tell whose profile to check. Try a link such as ' + analysis.service.profileUrl('username') + '.';
+      } else {
+        title = 'This does not look like a valid URL';
+        text = 'Enter a full profile link such as https://github.com/username, or a shorter form like github.com/username.';
+      }
+      input.setAttribute('aria-invalid', 'true');
+      show(statusBox('error', title, [text]));
+    }
+
+    function showUnsupported(analysis) {
+      var autoNames = SERVICES.filter(function (s) { return s.support !== 'manual'; }).map(function (s) { return s.name; });
+      var shortList = autoNames.slice(0, 6).join(', ') + ' and others';
+      input.setAttribute('aria-invalid', 'true');
+      show(statusBox('warn', analysis.host + ' is not supported yet', [
+        'Git Profile Age currently recognises ' + shortList + ' (see the full list below).',
+        h('p', null, ['If ' + analysis.host + ' is a Git hosting service you would like to see supported, ', externalLink(CONTACT_URL, 'contact me on LinkedIn'), '.'])
+      ]));
+    }
+
+    function showManualOnly(analysis) {
+      var service = analysis.service;
+      var url = service.manualUrl(analysis.handle);
+      show(statusBox('warn', service.name + ' profile detected, manual check needed', [
+        service.manualReason,
+        h('p', null, ['Profile: ', externalLink(analysis.profileUrl, displayUrl(analysis.profileUrl))])
+      ], [
+        h('a', { href: url, rel: 'noopener', target: '_blank', 'class': 'button btn-primary' }, ['Open profile on ' + service.name])
+      ]));
+    }
+
+    function showError(analysis, error) {
+      var service = analysis.service;
+      var handle = analysis.handle;
+      var title, paragraphs = [];
+      switch (error.code) {
+        case 'not_found':
+          title = 'Profile not found';
+          paragraphs.push(error.details.uncertain
+            ? 'No ' + service.name + ' profile was found at ' + displayUrl(analysis.profileUrl) + ', or ' + service.name + ' blocked the request. Check the spelling or open the link to verify.'
+            : 'No ' + service.name + ' profile exists at ' + displayUrl(analysis.profileUrl) + '. Check the spelling; the account may also have been renamed or deleted.');
+          break;
+        case 'rate_limited':
+          title = service.name + ' API limit reached';
+          var when = error.details.retryAt ? ' in about ' + formatRelativeShort(error.details.retryAt - Date.now()) : ' later';
+          paragraphs.push(service.name + ' limits anonymous API requests per network, and that limit has been reached. Try again' + when + ', or open the profile directly.');
+          break;
+        case 'forbidden':
+          title = service.name + ' refused the request';
+          paragraphs.push('The profile may be private, restricted or deactivated, so its details are not available without signing in.');
+          break;
+        case 'network':
+          title = 'Could not reach ' + service.name;
+          paragraphs.push('The request did not get through. Check your internet connection and try again. Some networks and browser extensions block API requests.');
+          break;
+        case 'timeout':
+          title = service.name + ' is taking too long';
+          paragraphs.push('The request timed out after ' + (REQUEST_TIMEOUT_MS / 1000) + ' seconds. Try again in a moment.');
+          break;
+        case 'date_unavailable':
+          title = 'Profile found, creation date not public';
+          paragraphs.push(error.details.reason || service.name + ' does not publish the creation date of this profile.');
+          break;
+        case 'server_error':
+          title = service.name + ' is having trouble';
+          paragraphs.push(service.name + ' returned a server error. Try again in a few minutes.');
+          break;
+        default:
+          title = 'Unexpected response from ' + service.name;
+          paragraphs.push('The API answered in a way this tool did not expect. Try again later, or open the profile directly.');
+      }
+      var kind = error.code === 'date_unavailable' ? 'warn' : 'error';
+      var actions = [
+        h('a', { href: service.manualUrl(handle), rel: 'noopener', target: '_blank', 'class': 'button ' + (kind === 'warn' ? 'btn-primary' : 'btn-secondary') }, ['Open profile on ' + service.name])
+      ];
+      if (error.code !== 'not_found' && error.code !== 'date_unavailable') {
+        actions.push(h('button', { type: 'button', 'class': 'btn-secondary', onclick: function () { runLookup(analysis, { bypassCache: true }); } }, ['Try again']));
+      }
+      if (error.code === 'date_unavailable') {
+        paragraphs.push(h('p', null, ['Profile: ', externalLink(analysis.profileUrl, displayUrl(analysis.profileUrl))]));
+      }
+      show(statusBox(kind, title, paragraphs, actions));
+    }
+
+    function showResult(analysis, result, fromCache) {
+      var service = analysis.service;
+      var card = h('article', { 'class': 'card result-card' });
+      card.appendChild(h('p', { 'class': 'eyebrow', text: 'Profile created' }));
+      var timeEl = h('time', { datetime: result.createdAt, text: formatCreated(result.createdAt, result.precision) });
+      card.appendChild(h('p', { 'class': 'created' }, [timeEl]));
+      var ageEl = h('p', { 'class': 'age', text: formatAge(result.createdAt) });
+      card.appendChild(ageEl);
+
+      var facts = h('dl', { 'class': 'facts' });
+      facts.appendChild(h('dt', { text: 'Service' }));
+      facts.appendChild(h('dd', { text: service.name }));
+      facts.appendChild(h('dt', { text: 'Profile' }));
+      facts.appendChild(h('dd', null, [externalLink(analysis.profileUrl, displayUrl(analysis.profileUrl)), h('span', { 'class': 'badge', text: result.kind })]));
+      facts.appendChild(h('dt', { text: 'API timestamp' }));
+      facts.appendChild(h('dd', null, [h('code', { text: result.createdAt })]));
+      card.appendChild(facts);
+
+      if (result.note) card.appendChild(h('p', { 'class': 'note', text: result.note }));
+
+      var shareStatus = h('p', { 'class': 'share-status', 'aria-live': 'polite' });
+      var actions = h('div', { 'class': 'actions' });
+      var shareButton = h('button', { type: 'button', 'class': 'btn-primary' }, ['Share result']);
+      shareButton.addEventListener('click', function () { shareResult(analysis, result, actions, shareStatus); });
+      actions.appendChild(shareButton);
+      actions.appendChild(h('a', { href: analysis.profileUrl, rel: 'noopener', target: '_blank', 'class': 'button btn-secondary' }, ['Open profile']));
+      card.appendChild(actions);
+      card.appendChild(shareStatus);
+
+      var meta = h('p', { 'class': 'meta' });
+      if (fromCache) {
+        meta.appendChild(document.createTextNode('Result from your browser cache, checked ' + formatRelativeShort(Date.now() - fromCache) + ' ago. '));
+        meta.appendChild(h('button', { type: 'button', onclick: function () { runLookup(analysis, { bypassCache: true }); } }, ['Check again']));
+      } else {
+        meta.appendChild(document.createTextNode('Checked just now. The age is recalculated while this page stays open.'));
+      }
+      card.appendChild(meta);
+
+      show(card);
+      ageTimer = setInterval(function () { ageEl.textContent = formatAge(result.createdAt); }, 60 * 1000);
+    }
+
+    // ------------------------------------------------------------------
+    // Sharing: Web Share API -> Clipboard API -> selectable text field
+    // ------------------------------------------------------------------
+    function shareUrlFor(profileUrl) {
+      return location.origin + location.pathname + '?url=' + encodeURIComponent(profileUrl);
+    }
+
+    function shareResult(analysis, result, actionsEl, statusEl) {
+      var url = shareUrlFor(analysis.profileUrl);
+      var text = analysis.service.name + ' profile ' + displayUrl(analysis.profileUrl) + ' was created on ' + formatCreated(result.createdAt, result.precision) + ' (' + formatAge(result.createdAt) + ').';
+      statusEl.textContent = '';
+
+      var tryClipboard = function () {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          // Some browsers leave the promise pending while asking for permission;
+          // fall back to the visible link if nothing happens within 2 seconds.
+          var timeout = new Promise(function (resolve) { setTimeout(function () { resolve(false); }, 2000); });
+          var write = navigator.clipboard.writeText(url).then(function () {
+            statusEl.textContent = 'Link copied to clipboard.';
+            return true;
+          }, function () { return false; });
+          return Promise.race([write, timeout]);
+        }
+        return Promise.resolve(false);
+      };
+
+      var showManualCopy = function () {
+        var existing = actionsEl.querySelector('.share-fallback');
+        if (existing) existing.remove();
+        var field = h('input', { type: 'text', readonly: true, value: url, 'aria-label': 'Shareable link' });
+        var copyButton = h('button', { type: 'button', 'class': 'btn-secondary' }, ['Copy']);
+        copyButton.addEventListener('click', function () {
+          field.focus();
+          field.select();
+          var copied = false;
+          try { copied = document.execCommand && document.execCommand('copy'); } catch (e) { copied = false; }
+          statusEl.textContent = copied ? 'Link copied to clipboard.' : 'Press Ctrl+C (or Cmd+C) to copy the selected link.';
+        });
+        var wrap = h('div', { 'class': 'share-fallback' }, [field, copyButton]);
+        actionsEl.appendChild(wrap);
+        field.focus();
+        field.select();
+        statusEl.textContent = 'Copy the link below to share this result.';
+      };
+
+      var shared = navigator.share
+        ? navigator.share({ title: 'Git Profile Age', text: text, url: url }).then(function () {
+            statusEl.textContent = 'Shared.';
+            return true;
+          }, function (error) {
+            if (error && error.name === 'AbortError') { statusEl.textContent = ''; return true; }
+            return false;
+          })
+        : Promise.resolve(false);
+
+      shared.then(function (done) {
+        if (done) return;
+        return tryClipboard().then(function (copied) { if (!copied) showManualCopy(); });
+      });
+    }
+
+    // ------------------------------------------------------------------
+    // Lookup flow
+    // ------------------------------------------------------------------
+    function updateAddressBar(profileUrl) {
+      try {
+        var target = location.pathname + '?url=' + encodeURIComponent(profileUrl);
+        if (location.pathname + location.search !== target) history.replaceState(null, '', target);
+      } catch (e) { /* history API unavailable */ }
+    }
+
+    function runLookup(analysis, options) {
+      options = options || {};
+      var requestId = ++currentRequest;
+      input.removeAttribute('aria-invalid');
+      input.value = analysis.profileUrl;
+      updateAddressBar(analysis.profileUrl);
+
+      if (analysis.service.support === 'manual') { showManualOnly(analysis); return Promise.resolve(); }
+
+      if (!options.bypassCache) {
+        var cached = cacheGet(analysis.profileUrl);
+        if (cached) { showResult(analysis, cached, cached.fetchedAt); return Promise.resolve(); }
+      } else {
+        cacheRemove(analysis.profileUrl);
+      }
+
+      setBusy(true);
+      showLoading(analysis);
+      return lookupProfile(analysis.service, analysis.handle).then(function (result) {
+        if (requestId !== currentRequest) return;
+        cacheSet(analysis.profileUrl, result);
+        showResult(analysis, result, null);
+      }, function (error) {
+        if (requestId !== currentRequest) return;
+        showError(analysis, error instanceof LookupError ? error : new LookupError('unexpected'));
+      }).then(function () {
+        if (requestId === currentRequest) setBusy(false);
+      });
+    }
+
+    function handleInput(raw) {
+      var analysis = analyzeInput(raw);
+      var pending;
+      if (analysis.status === 'invalid') { showInvalid(analysis); pending = Promise.resolve(); }
+      else if (analysis.status === 'unsupported') { showUnsupported(analysis); pending = Promise.resolve(); }
+      else pending = runLookup(analysis);
+      syncFieldButtons();
+      return pending;
+    }
+
+    // ------------------------------------------------------------------
+    // Paste and Clear buttons inside the field. Only one is visible at a
+    // time: Paste while the field is empty (and the browser can read the
+    // clipboard), Clear once there is text.
+    // ------------------------------------------------------------------
+    function syncFieldButtons() {
+      var hasText = input.value.length > 0;
+      clearButton.hidden = !hasText;
+      pasteButton.hidden = hasText || !canReadClipboard;
+    }
+
+    function resetForm() {
+      currentRequest++; // ignore any lookup still in flight
+      input.value = '';
+      input.removeAttribute('aria-invalid');
+      clearResult();
+      setBusy(false);
+      try { if (location.search) history.replaceState(null, '', location.pathname); } catch (e) { /* ignore */ }
+      syncFieldButtons();
+      input.focus();
+    }
+
+    function pasteFromClipboard() {
+      // The permission prompt can leave the promise pending indefinitely;
+      // after 3 seconds show the manual hint instead of doing nothing.
+      var timeout = new Promise(function (resolve, reject) { setTimeout(function () { reject(new Error('timeout')); }, 3000); });
+      Promise.race([navigator.clipboard.readText(), timeout]).then(function (text) {
+        text = String(text || '').trim();
+        if (!text) {
+          show(statusBox('info', 'Clipboard is empty', ['Copy a profile link first, then press Paste.']));
+          input.focus();
+          return;
+        }
+        input.value = text;
+        handleInput(text);
+      }, function () {
+        show(statusBox('info', 'Clipboard access was not allowed', [
+          'Paste the link into the field yourself: Ctrl+V (Cmd+V on Mac), or long-press the field on a phone.'
+        ]));
+        input.focus();
+      });
+    }
+
+    clearButton.addEventListener('click', resetForm);
+    pasteButton.addEventListener('click', pasteFromClipboard);
+    input.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape' && input.value) { event.preventDefault(); resetForm(); }
+    });
+    syncFieldButtons();
+
+    form.addEventListener('submit', function (event) {
+      event.preventDefault();
+      handleInput(input.value);
+    });
+    input.addEventListener('input', function () { input.removeAttribute('aria-invalid'); syncFieldButtons(); });
+    Array.prototype.forEach.call(document.querySelectorAll('.example[data-example]'), function (button) {
+      button.addEventListener('click', function () {
+        var example = button.getAttribute('data-example');
+        input.value = example;
+        handleInput(example);
+      });
+    });
+
+    // ------------------------------------------------------------------
+    // Supported-services table
+    // ------------------------------------------------------------------
+    (function renderServicesTable() {
+      var tbody = document.querySelector('#services-table tbody');
+      var labels = { auto: 'Automatic', partial: 'Partial', manual: 'Manual check' };
+      SERVICES.forEach(function (service) {
+        tbody.appendChild(h('tr', null, [
+          h('th', { scope: 'row' }, [externalLink('https://' + service.hosts[0] + '/', service.name)]),
+          h('td', { text: labels[service.support] || service.support }),
+          h('td', { text: service.summary || '' })
+        ]));
+      });
+    })();
+
+    // ------------------------------------------------------------------
+    // Auto-lookup from ?url=
+    // ------------------------------------------------------------------
+    (function initFromQuery() {
+      cachePrune();
+      var params;
+      try { params = new URLSearchParams(location.search); } catch (e) { return; }
+      var shared = params.get('url');
+      if (shared === null) return;
+      input.value = shared;
+      handleInput(shared);
+    })();
+
+    // Exposed for manual testing in the browser console; not used by the page itself.
+    window.GitProfileAge = { services: SERVICES, check: handleInput, analyzeInput: analyzeInput, formatAge: formatAge, formatCreated: formatCreated, lookupProfile: lookupProfile, storage: storage.name };
+  })();
+  </script>
+</body>
+</html>

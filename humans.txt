@@ -1,0 +1,25 @@
+/* TEAM */
+    Author: Yaroslav Podorvanov
+    GitHub: https://github.com/YaroslavPodorvanov
+    LinkedIn: https://www.linkedin.com/in/yaroslav-podorvanov/
+    Location: Ukraine
+
+/* THANKS */
+    Built with Claude Code (Anthropic), pair-programming with the Claude model.
+
+/* SITE */
+    Name: Git Profile Age
+    Purpose: Check when a GitHub, GitLab, Bitbucket or other Git profile was created
+    Source: https://github.com/doutivity/git-profile-age
+    License: MIT
+    Last update: 2026-09-13
+    Language: English, Ukrainian
+    Standards: HTML5, CSS3, ECMAScript 5 (vanilla JavaScript)
+    Components: Fetch API, AbortController, Intl.DateTimeFormat, Web Share API,
+                Clipboard API, Web Storage (localStorage / sessionStorage), History API
+    Data sources: public REST APIs of GitHub, GitLab, Bitbucket, Codeberg, Gitea,
+                  Gitee, GitCode, Hugging Face and selected self-hosted instances
+    Architecture: single static index.html, no build step, no backend, no dependencies
+    Privacy: no analytics, no tracking, no cookies
+    Hosting: GitHub Pages
+    IDE: Claude Code (CLI)

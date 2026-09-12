@@ -1,0 +1,7 @@
+# Security contact for Git Profile Age (https://doutivity.github.io/git-profile-age/)
+Contact: https://github.com/doutivity/git-profile-age/security/advisories/new
+Contact: https://www.linkedin.com/in/yaroslav-podorvanov/
+Expires: 2027-09-13T00:00:00.000Z
+Preferred-Languages: en, uk
+Canonical: https://doutivity.github.io/git-profile-age/.well-known/security.txt
+Policy: https://github.com/doutivity/git-profile-age/blob/main/CONTRIBUTING.md#security
