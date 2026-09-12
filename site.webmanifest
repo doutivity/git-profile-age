@@ -1,0 +1,14 @@
+{
+  "name": "Git Profile Age",
+  "short_name": "Profile Age",
+  "description": "Check when a GitHub, GitLab, Bitbucket or other Git profile was created.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "browser",
+  "background_color": "#f6f8fa",
+  "theme_color": "#0f766e",
+  "lang": "en",
+  "icons": [
+    { "src": "favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
